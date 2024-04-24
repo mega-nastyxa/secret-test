@@ -1,23 +1,22 @@
 <script lang="ts">
   let amount: number = 0;
+  let currency1: string = 'RUB';
+  let currency2: string = 'USD';
+  let result: number = 0;
 
-function convertCurrency(): void {
-  const currency1: string = (document.getElementById("currency1") as HTMLSelectElement).value;
-  const currency2: string = (document.getElementById("currency2") as HTMLSelectElement).value;
+  function convertCurrency(): void {
 
-  const url: string = `https://v6.exchangerate-api.com/v6/7c2fc9ec06675114690aadd8/latest/${currency1}`;
-  fetch(url)
-    .then(response => response.json())
-    .then(data => {
-      const exchangeRate: number = data.conversion_rates[currency2];
-      const result: number = amount * exchangeRate;
-
-      (document.getElementById("result") as HTMLInputElement).value = result.toFixed(2);
-    })
-    .catch(error => {
-      console.error("Ошибка при выполнении запроса к API:", error);
-    });
-}
+    const url: string = `https://v6.exchangerate-api.com/v6/7c2fc9ec06675114690aadd8/latest/${currency1}`;
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        const exchangeRate: number = data.conversion_rates[currency2];
+        result = amount * exchangeRate;
+      })
+      .catch(error => {
+        console.error("Ошибка при выполнении запроса к API:", error);
+      });
+  }
 </script>
 
 
@@ -26,7 +25,7 @@ function convertCurrency(): void {
 
   <div>
     <label for="currency1">Первая валюта:</label>
-    <select id="currency1">
+    <select id="currency1" bind:value={currency1} on:change={convertCurrency}>
       <option value="RUB">Рубли</option>
       <option value="USD">Доллары</option>
     </select>
@@ -34,7 +33,7 @@ function convertCurrency(): void {
 
   <div>
     <label for="currency2">Вторая валюта:</label>
-    <select id="currency2">
+    <select id="currency2" bind:value={currency2} on:change={convertCurrency}>
       <option value="RUB">Рубли</option>
       <option value="USD">Доллары</option>
     </select>
@@ -47,7 +46,7 @@ function convertCurrency(): void {
 
   <div>
     <label for="result">Результат:</label>
-    <input type="text" id="result" readonly class="result">
+    <input type="text" id="result" readonly class="result" bind:value={result}>
   </div>
 </div>
 
