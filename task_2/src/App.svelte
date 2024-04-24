@@ -1,47 +1,57 @@
 <script lang="ts">
-  import svelteLogo from './assets/svelte.svg'
-  import viteLogo from '/vite.svg'
-  import Counter from './lib/Counter.svelte'
+  let amount: number = 0;
+
+function convertCurrency(): void {
+  const currency1: string = (document.getElementById("currency1") as HTMLSelectElement).value;
+  const currency2: string = (document.getElementById("currency2") as HTMLSelectElement).value;
+
+  const url: string = `https://v6.exchangerate-api.com/v6/7c2fc9ec06675114690aadd8/latest/${currency1}`;
+  fetch(url)
+    .then(response => response.json())
+    .then(data => {
+      const exchangeRate: number = data.conversion_rates[currency2];
+      const result: number = amount * exchangeRate;
+
+      (document.getElementById("result") as HTMLInputElement).value = result.toFixed(2);
+    })
+    .catch(error => {
+      console.error("Ошибка при выполнении запроса к API:", error);
+    });
+}
 </script>
 
-<main>
+
+<div class="container">
+  <h1>Конвертер валют</h1>
+
   <div>
-    <a href="https://vitejs.dev" target="_blank" rel="noreferrer">
-      <img src={viteLogo} class="logo" alt="Vite Logo" />
-    </a>
-    <a href="https://svelte.dev" target="_blank" rel="noreferrer">
-      <img src={svelteLogo} class="logo svelte" alt="Svelte Logo" />
-    </a>
-  </div>
-  <h1>Vite + Svelte</h1>
-
-  <div class="card">
-    <Counter />
+    <label for="currency1">Первая валюта:</label>
+    <select id="currency1">
+      <option value="RUB">Рубли</option>
+      <option value="USD">Доллары</option>
+    </select>
   </div>
 
-  <p>
-    Check out <a href="https://github.com/sveltejs/kit#readme" target="_blank" rel="noreferrer">SvelteKit</a>, the official Svelte app framework powered by Vite!
-  </p>
+  <div>
+    <label for="currency2">Вторая валюта:</label>
+    <select id="currency2">
+      <option value="RUB">Рубли</option>
+      <option value="USD">Доллары</option>
+    </select>
+  </div>
 
-  <p class="read-the-docs">
-    Click on the Vite and Svelte logos to learn more
-  </p>
-</main>
+  <div>
+    <label for="amount">Сумма:</label>
+    <input type="number" id="amount" bind:value={amount} on:input={convertCurrency}>
+  </div>
+
+  <div>
+    <label for="result">Результат:</label>
+    <input type="text" id="result" readonly class="result">
+  </div>
+</div>
+
 
 <style>
-  .logo {
-    height: 6em;
-    padding: 1.5em;
-    will-change: filter;
-    transition: filter 300ms;
-  }
-  .logo:hover {
-    filter: drop-shadow(0 0 2em #646cffaa);
-  }
-  .logo.svelte:hover {
-    filter: drop-shadow(0 0 2em #ff3e00aa);
-  }
-  .read-the-docs {
-    color: #888;
-  }
+
 </style>
